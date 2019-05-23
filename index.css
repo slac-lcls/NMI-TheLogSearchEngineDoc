@@ -1,0 +1,6 @@
+/* !!! CSS reset !!!  per eliminare strani 2px in piu' che appaiono qua a la */
+* {
+   margin: 0;
+   padding: 0;
+}
+
