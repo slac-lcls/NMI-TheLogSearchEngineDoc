@@ -41,6 +41,12 @@ h2 {
   /* margin-bottom: 30px; */
 }
 
+h3 {
+  margin-top: 30px;
+  /* margin-bottom: 30px; */
+}
+
+
 hr { 
     margin-bottom:30px;
 }
@@ -158,3 +164,8 @@ div.configFile {
    padding-top:10px;
 }
 
+img.workInProgress { 
+    float:left;
+    width: 20%;
+    margin-right: 10px;
+}

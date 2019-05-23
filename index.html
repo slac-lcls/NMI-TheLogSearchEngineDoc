@@ -22,8 +22,12 @@
 
 <body>
 
-<h1> Elasticstack for logs  [UNDER DEV. ] </h1> 
+<h1> Elasticstack for logs 
+<img class="workInProgress" src="./pics/work-in-progress-2.png">
+</h1> 
 <hr>
+
+
 
 <p>
 <b>Objective</b>. We want to search into our servers log files as fast and easily as possible.  
@@ -37,7 +41,7 @@ Before this project started the way to search into log files was this:
 <ol>
 <li> Log into <span class="machine">psmetric01</span>, typically via <span class="cmd">ssh</span> or <span class="cmd">nomachine</span>.
 
-<li> Go to the directory <span class="path">/u2/logs</span> where the logs are collected. 
+<li> Go to the directory <span class="path">/u2/logs</span> where the logs are collected. Each directory here corresponds to a machine name, so there is <span class="machine">psmetric01</span> itself then all the others: <span class="machine">psana101</span>, <span class="machine">psana102</span>, <span class="machine">psana103</span>, ... , etc.
 
 <li> Now, you need to know the machine you are interesed in and the logfile name you think will be relevant. For example, if I want to look for general error messages in <span class="machine">psmetric01</span> I file visit the file <span class="path">psmetric01/messages</span>. If I am interested in who logged in I would probably visit <span class="path"> psmetric01/secure </span>.
 
@@ -75,6 +79,30 @@ It goes without saying that the search can be made much more complex and precise
 <hr>
 
 <h3>Method 1. From the shell</h3>
+
+<ol>
+<li> Log into <span class="machine">psmetric01</span> 
+<li> Then I look for my login name 'nmingott': 
+<div class="cmd withOutput">$> elastico nmingott | tail -n 5</div>
+<div class="output">May 23 14:19:42 psmetric01 sshd[2541]: Authorized to nmingott, krb5 principal nmingott@SLAC.STANFORD.EDU (ssh_gssapi_krb5_cmdok)
+May 23 14:19:42 psmetric01 systemd-logind: New session 12268 of user nmingott.
+May 23 14:19:42 psmetric01 systemd: Created slice User Slice of nmingott.
+May 23 14:19:42 psmetric01 sshd[2541]: pam_unix(sshd:session): session opened for user nmingott by (uid=0)
+May 23 14:19:42 psmetric01 systemd: Started Session 12268 of user nmingott.</div>
+<p>
+</p>
+</ol>
+
+<p> A few things are worth remarking:
+<ol>
+<li> In <span class="cmd">elastico</span> output I can see my own login into <span class="machine">psmetric01</span>, that is good.
+<li> <span class="cmd">elastico</span> returns by default with the most recent log lines produced. 
+<li> The log results are by default sorted in time. The maximum time precision currently in the logs is the <i>second</i>.
+<li> The operation is expected to be fast, by default the search should complete in less than 1-2 seconds.
+</ol>
+</p>
+
+The program <span class="cmd">elastico</span> is documented <a href="https://slac-lcls.github.io/elastico/">here</a>. 
 
 <h3>Method 2. From the web</h3>
 
