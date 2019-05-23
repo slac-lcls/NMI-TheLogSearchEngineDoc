@@ -98,6 +98,19 @@ span.cmd {
     color: blue;    
 }
 
+span.path { 
+   font-family: "Roboto Mono";
+   font-size: 0.80em;
+   color: darkgreen;    
+}
+
+span.machine { 
+   font-family: "Roboto Mono";
+   font-size: 0.80em;
+   color: darkgreen;    
+}
+
+
 div.cmd { 
    font-family: "Roboto Mono";
    font-size: 0.80em;

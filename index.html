@@ -22,10 +22,61 @@
 
 <body>
 
-<h1> Hello World </h1>
+<h1> Elasticstack for logs  [UNDER DEV. ] </h1> 
+<hr>
 
+<p>
+<b>Objective</b>. We want to search into our servers log files as fast and easily as possible.  
+</p>
 
+<h2> Ante Hoc. How the problem was managed so far. </h2>
+<hr>
 
+<p>
+Before this project started the way to search into log files was this:
+<ol>
+<li> Log into <span class="machine">psmetric01</span>, typically via <span class="cmd">ssh</span> or <span class="cmd">nomachine</span>.
+
+<li> Go to the directory <span class="path">/u2/logs</span> where the logs are collected. 
+
+<li> Now, you need to know the machine you are interesed in and the logfile name you think will be relevant. For example, if I want to look for general error messages in <span class="machine">psmetric01</span> I file visit the file <span class="path">psmetric01/messages</span>. If I am interested in who logged in I would probably visit <span class="path"> psmetric01/secure </span>.
+
+</ol>
+</p>
+
+There are already a few issues with this saerch method:
+<ol>
+<li> Log files get rotated, you must be ready a single log files and all his rotated relatives. So for example, you may need to visit <span class="path">psmetric01/secure</span> but also <span class="path">secure-YYYYM1D1.gz</span>, <span class="path">secure-YYYYM2D2</span> ... etc. 
+
+<li> You must an expert to search the logs, indeed, you need to know <i>a priori</i> the server name and the exact filename where you neet do loook at. So, you must know from the beginning where the problem is, which most often is not the case. 
+
+<li> If you don't know well where to look at you can still perform the way of whishful fishing with <span class="cmd">grep</span> and see what happens. It goes without saying that this is really problematic because files can rotate and there will be issues in sorting out the results. For exampe, this is a naive search of my usernae on all the non-rotated logs 
+
+<div class="cmd withOutput">grep -r 'nmingott' * | head -n 3</div>
+<div class="output">psana101/cron-20181224:Dec 16 03:45:01 psana101 CROND[16517]: (nmingott) CMD (export CRON_RUN="true"; /reg/neh/home/nmingott/cronScripts/thisMachineStatusToElastic.rb)
+psana101/cron-20181224:Dec 16 03:46:11 psana101 crontab[16648]: (root) LIST (nmingott)
+psana101/cron-20181224:Dec 16 03:50:01 psana101 CROND[16964]: (nmingott) CMD (export CRON_RUN="true"; /reg/neh/home/nmingott/cronScripts/thisMachineStatusToElastic.rb)</div>
+
+<div class="cmd withOutput">grep -r 'nmingott' * | tail -n 3</div>
+<div class="output">psmetric04/secure.duplicate:Feb  5 15:45:16 psmetric04 sudo: pam_unix(sudo:session): session opened for user root by nmingott(uid=0)
+psmetric04/secure.duplicate:Feb  5 15:48:17 psmetric04 sudo: nmingott : TTY=pts/3 ; PWD=/reg/neh/home5/nmingott/scripts/systemTap ; USER=root ; COMMAND=/bin/stap snoop-syscall-open
+psmetric04/secure.duplicate:Feb  5 15:48:17 psmetric04 sudo: pam_unix(sudo:session): session opened for user root by nmingott(uid=0)</div>
+
+<p>
+Considering today is 23 May 2019, and I just logged into <span class="machine">psmetric01</span> to run these commands, the output is far from satisfactory, the most recent result is from February ! 
+</p>
+
+<p>
+It goes without saying that the search can be made much more complex and precise. Maybe we could write also a little script just to perform a specific search. But that would require time and thinking. The system we implemented hopefully will note require neither of them and it will be very flexible.
+</p>
+</ol>
+
+<h2> Post Hoc. How do we search now </h2>
+<hr>
+
+<h3>Method 1. From the shell</h3>
+
+<h3>Method 2. From the web</h3>
 
 </body>
 </html>
