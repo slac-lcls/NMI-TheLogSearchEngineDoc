@@ -5,7 +5,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="description" content="Project elastico.">
+<meta name="description" content="LCLS server logs under Elasticsearch, an overview.">
 <meta name="keywords" content="HTML,CSS,JavaScript">
 <meta name="author" content="Dr. Nicola Mingotti">
 
@@ -17,6 +17,15 @@
 
 <!-- Stylesheet   -->
 <link rel="stylesheet" href="./index.css">
+
+<!-- Utility scrtip for file editing. When load the page move to the end.  -->
+<script>
+    setTimeout(goToEndOfPage, 1000);
+    function goToEndOfPage(){
+        window.scrollTo(0,document.body.scrollHeight);
+        // setTimeout(printSomething, 1000);
+    }
+</script>
 
 </head>
 
@@ -105,6 +114,113 @@ May 23 14:19:42 psmetric01 systemd: Started Session 12268 of user nmingott.</div
 The program <span class="cmd">elastico</span> is documented <a href="https://slac-lcls.github.io/elastico/">here</a>. 
 
 <h3>Method 2. From the web</h3>
+
+TODO.
+
+<h2> How does our 'Log ElasticStack' works  </h2>
+
+<p>
+<b>Definition.</b> In this context I refer to our <b>Log Elastic Stack</b> as the set of all programs that permit us to store, analized and retrive log lines to/from Elasticsearch. It is the full software ecosistem running around Elasticsearch and solving our log problem.
+</p>
+
+<p>
+The central piece of software is <b>Elasticsearch</b> which is an Information Retrival System. We can think of it in general term as a Database. We store log lines into it and then we ask it to look for them in a later moment.
+</p>
+
+<p>
+My source of <b>documentation</b> about Elasticsearch was the book "Elasticsearch: The Definitive Guide, 1st ed, O'Reilly2015.". This software evolves fast, also its API does, so one must constantly guard against outdated qeury. This is an issue, indeed to automatize anything I need a stable API. When the API changes my programs will brake.  A good point is that a most updated version of the book is available online under the name <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html">"Elasticsearch Reference"</a> and (it is?) updated regularly? 
+</p>
+
+<p>
+Elasticsearch is a shell around <b>Lucene</b>, which is a very succesful Java information Retrival library used in many software. So, that hard core work is performed by Lucene. ....
+</p>
+
+<table class="mytab">
+<tr> 
+<th> Software <th> origin <th> location <th> port  <th> function
+<tr> 
+<td class="mytab c1"> <a href="https://www.elastic.co/products/elasticsearch">Elasticsearch</a> 
+<td class="mytab c2"> elastic.co <td class="mytab c3"> psmetric04 <td class="mytab"> 9200
+<td class="mytab c4"> Provide HTTP RESTful API to store and retrive documents. For us, to store and 
+retrive loglines.
+
+<tr>
+<td class="mytab c1"> LCLSlogBeat  <td class="mytab c2"> LCLS <td class="mytab c3"> psmetric01 <td class="mytab"> -
+<td class="mytab c4"> Continuously parses new log lines appearing in <span class="path">psmetric01:/u2/logs </span> files. Send lines blocks to Elasticsearch every 1 second.
+                           
+<tr>
+<td class="mytab c1"> elastico  <td class="mytab c2"> LCLS <td class="mytab c3"> psmetric01 <td class="mytab"> -
+<td class="mytab c4"> Shell tool to search log lines stored into Elasticsearch.
+
+<tr>
+<td class="mytab c1"> elasticall <td class="mytab c2"> LCLS <td class="mytab c3"> psmetric01 <td class="mytab"> -
+<td class="mytab c4"> Shell tool to send very general queries to Elasticsearch hiding the JSON
+complexity.
+
+<tr>
+<td class="mytab c1"> <a href="https://www.elastic.co/products/kibana">Kibana</a> 
+<td class="mytab c2"> elastic.co <td class="mytab c3"> psmetric04(*) <td class="mytab"> 5601
+<td class="mytab c4"> Web Graphical User Interface for Elasticsearch.
+
+<tr>
+<td class="mytab c1"> <a href="https://grafana.com/">Grafana </a>
+<td class="mytab c2"> Grafana Labs <td class="mytab c3"> psmetric04(*) <td class="mytab"> 3000
+<td class="mytab c4"> General purpose Web GUI for data analysis. 
+
+<tr>
+<td class="mytab c1"> elastigraf <td class="mytab c2"> LCLS <td class="mytab c3"> psmetric04(*) <td class="mytab"> - 
+<td class="mytab c4"> Grafana plugin the permit us to search seamlessly for our logs into Elasticsearch  
+without leaving Grafana.
+
+</table>
+
+
+<h2> How are logs collected to <span class="machine">psmetric01</span> ? </h2>
+
+<b>TODO</b>. talk a bit about syslogd and its configuration.
+
+<h2> Check that the system is working </h2>
+
+<h3> Check Elasticsearch is on and reachable</h3> 
+
+<p>
+<b>Short Way</b>. Ask Elasticsearch something and see if it answers. <span class="cmd">ssh</span> to 
+<span class="machine">psmetric01</span> and from there throw it this query:
+<div class="cmd withOutput">
+</div>
+</p>
+
+<ol>
+<li> <span class="cmd">ssh</span> to <span class="machine">psmetric01</span>, from there check you can see Elasticsearch listening.
+<div class="cmd withOutput"> $> nmap -p 9200 psmetric04</div>
+<div class="output">...........................
+PORT     STATE SERVICE
+3000/tcp open  ppp
+...........................
+</div>
+<li> 
+
+</ol>
+
+
+<h2> Important Maintenance </h2>
+
+<ul>
+<li> When you add a new machine to send its log to <span class="machine">psmetric01</span> you must <b>reboot</b> LCLSlogBeat service to make it update his list of known machines. 
+<div class="cmd"> $> ssh psmetric01 </div>
+<div class="cmd"> $> systemctl  </div>
+
+<li> From time to time check that there is disk space available in <span class="machine">psmetric04</span>. Indeed Elasticsearch is storing continuously data, sooner or later it will eat all of the disk space. 
+
+<li> From time to time older logs should be removed from Elasticsearch memory. 
+<b>TODOxNico</b> prepare a script line for this. <b>CAVEATxNico</b> there can be a problem, remember that logfiles year is 'guessed' from the log parser. 
+
+</ul>
+
+
+<h2> Elasticsearch configuration file </h2>
+
+<h2> Grafana configuration file ?</h2>
 
 </body>
 </html>
