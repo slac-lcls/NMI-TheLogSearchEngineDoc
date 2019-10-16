@@ -19,13 +19,13 @@
 <link rel="stylesheet" href="./index.css">
 
 <!-- Utility scrtip for file editing. When load the page move to the end.  -->
-<script>
-    setTimeout(goToEndOfPage, 1000);
-    function goToEndOfPage(){
-        window.scrollTo(0,document.body.scrollHeight);
-        // setTimeout(printSomething, 1000);
-    }
-</script>
+<!-- <script> -->
+<!--     setTimeout(goToEndOfPage, 1000); -->
+<!--     function goToEndOfPage(){ -->
+<!--         window.scrollTo(0,document.body.scrollHeight); -->
+<!--         // setTimeout(printSomething, 1000); -->
+<!--     } -->
+<!-- </script> -->
 
 </head>
 
@@ -52,18 +52,18 @@ Before this project started the way to search into log files was this:
 
 <li> Go to the directory <span class="path">/u2/logs</span> where the logs are collected. Each directory here corresponds to a machine name, so there is <span class="machine">psmetric01</span> itself then all the others: <span class="machine">psana101</span>, <span class="machine">psana102</span>, <span class="machine">psana103</span>, ... , etc.
 
-<li> Now, you need to know the machine you are interesed in and the logfile name you think will be relevant. For example, if I want to look for general error messages in <span class="machine">psmetric01</span> I file visit the file <span class="path">psmetric01/messages</span>. If I am interested in who logged in I would probably visit <span class="path"> psmetric01/secure </span>.
+<li> Now, you need to know the machine you are interesed in and the logfile name you think will be relevant. For example, if I want to look for general error messages in <span class="machine">psmetric01</span> I visit the file <span class="path">psmetric01/messages</span>. If I am interested in who logged in I would probably visit <span class="path"> psmetric01/secure </span>.
 
 </ol>
 </p>
 
 There are already a few issues with this saerch method:
 <ol>
-<li> Log files get rotated, you must be ready a single log files and all his rotated relatives. So for example, you may need to visit <span class="path">psmetric01/secure</span> but also <span class="path">secure-YYYYM1D1.gz</span>, <span class="path">secure-YYYYM2D2</span> ... etc. 
+<li> Log files get rotated, you must be ready to study single log files and all their rotated relatives. So for example, you may need to visit <span class="path">psmetric01/secure</span> but also <span class="path">secure-YYYYM1D1.gz</span>, <span class="path">secure-YYYYM2D2</span> ... etc. 
 
-<li> You must an expert to search the logs, indeed, you need to know <i>a priori</i> the server name and the exact filename where you neet do loook at. So, you must know from the beginning where the problem is, which most often is not the case. 
+<li> You must be an expert to search the logs, indeed, you need to know <i>a priori</i> the server name and the exact filename where you neet do loook at. So, you must know from the beginning where the problem is, which most often is not the case. 
 
-<li> If you don't know well where to look at you can still perform the way of whishful fishing with <span class="cmd">grep</span> and see what happens. It goes without saying that this is really problematic because files can rotate and there will be issues in sorting out the results. For exampe, this is a naive search of my usernae on all the non-rotated logs 
+<li> If you don't know well where to look at, you can still follow the way of whishful fishing with <span class="cmd">grep</span> and see what happens. It goes without saying that this is really problematic because files rotate and there will be issues in sorting out the results. For exampe, this is a naive search of my usernae on all the non-rotated logs 
 
 <div class="cmd withOutput">grep -r 'nmingott' * | head -n 3</div>
 <div class="output">psana101/cron-20181224:Dec 16 03:45:01 psana101 CROND[16517]: (nmingott) CMD (export CRON_RUN="true"; /reg/neh/home/nmingott/cronScripts/thisMachineStatusToElastic.rb)
@@ -80,7 +80,7 @@ Considering today is 23 May 2019, and I just logged into <span class="machine">p
 </p>
 
 <p>
-It goes without saying that the search can be made much more complex and precise. Maybe we could write also a little script just to perform a specific search. But that would require time and thinking. The system we implemented hopefully will note require neither of them and it will be very flexible.
+It goes without saying that the search can be made much more complex and precise. Maybe we could write also a little script just to perform a specific search. But that would require time and thinking. There will be the problem of documenting the script, how to use it, where to store it and, last but not least, to remember it exists. The system we implemented hopefully will not require neither of them and it will be very flexible.
 </p>
 </ol>
 
@@ -90,7 +90,7 @@ It goes without saying that the search can be made much more complex and precise
 <h3>Method 1. From the shell</h3>
 
 <ol>
-<li> Log into <span class="machine">psmetric01</span> 
+<li> I log into <span class="machine">psmetric01</span> 
 <li> Then I look for my login name 'nmingott': 
 <div class="cmd withOutput">$> elastico nmingott | tail -n 5</div>
 <div class="output">May 23 14:19:42 psmetric01 sshd[2541]: Authorized to nmingott, krb5 principal nmingott@SLAC.STANFORD.EDU (ssh_gssapi_krb5_cmdok)
@@ -104,8 +104,10 @@ May 23 14:19:42 psmetric01 systemd: Started Session 12268 of user nmingott.</div
 
 <p> A few things are worth remarking:
 <ol>
-<li> In <span class="cmd">elastico</span> output I can see my own login into <span class="machine">psmetric01</span>, that is good.
+<li> In <span class="cmd">elastico</span> output I can see my own last, just performed, login into <span class="machine">psmetric01</span>, that is good.
+
 <li> <span class="cmd">elastico</span> returns by default with the most recent log lines produced. 
+
 <li> The log results are by default sorted in time. The maximum time precision currently in the logs is the <i>second</i>.
 <li> The operation is expected to be fast, by default the search should complete in less than 1-2 seconds.
 </ol>
@@ -115,7 +117,14 @@ The program <span class="cmd">elastico</span> is documented <a href="https://sla
 
 <h3>Method 2. From the web</h3>
 
-TODO.
+There are currently two ways to do it. We are using non of them at the moment. 
+
+<ul>
+<li> You could use <b>Kibana</b>. Whilst this is a very flexible tool  and sometimes it can save time, it also very easy to get lost there. The queries it does by default are not specific for our use-case. Moreover, in an effort to unify the monitoring tools we ddecided to use as much as possible <b>Grafana</b>. 
+
+<li> I developed a Grafana plugin called <b>Elastigraph</b>, to perform Elasticsearch queries from Grafana. The queries it runs are very specific to our problem, the user does not need to know JSON stuff. On the other side, both Wilko and I, consider the shell tool <b>Elastico</b> much more practical and powerful, so, over time, Elastigraph was left behind. 
+
+</ul>
 
 <h2> How does our 'Log ElasticStack' works  </h2>
 
@@ -165,7 +174,12 @@ complexity.
 <tr>
 <td class="mytab c1"> <a href="https://grafana.com/">Grafana </a>
 <td class="mytab c2"> Grafana Labs <td class="mytab c3"> psmetric04(*) <td class="mytab"> 3000
-<td class="mytab c4"> General purpose Web GUI for data analysis. 
+<td class="mytab c4"> General purpose Web GUI for data analysis. (for experiments)
+
+<tr>
+<td class="mytab c1"> <a href="https://grafana.com/">Grafana </a>
+<td class="mytab c2"> Grafana Labs <td class="mytab c3"> pswww <td class="mytab"> SLAC WEB AUTH
+<td class="mytab c4"> General purpose Web GUI for data analysis. Public. Visit Grafana-dev. 
 
 <tr>
 <td class="mytab c1"> elastigraf <td class="mytab c2"> LCLS <td class="mytab c3"> psmetric04(*) <td class="mytab"> - 
