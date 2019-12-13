@@ -5,7 +5,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="description" content="LCLS server logs under Elasticsearch, an overview.">
+<meta name="description" content="LCLS server logs search engine, an overview.">
 <meta name="keywords" content="HTML,CSS,JavaScript">
 <meta name="author" content="Dr. Nicola Mingotti">
 
@@ -31,7 +31,7 @@
 
 <body>
 
-<h1> Elasticstack for logs 
+<h1> The LCLS server logs search engine 
 <img class="workInProgress" src="./pics/work-in-progress-2.png">
 </h1> 
 <hr>
@@ -41,6 +41,56 @@
 <p>
 <b>Objective</b>. We want to search into our servers log files as fast and easily as possible.  
 </p>
+
+<h2> Recent changes. From Elasticsearch to Solr  </h2> 
+<hr>
+
+<p>
+Between <b>Nov/Dec 2019</b> I re-implemented our search engine stack in Solr, in all parallel to the one already running in Elasticsearch. As of today <b>12-Dic-2019</b> the port is complete and the Solr implementation is working. In a few weeks, if all goes well, Elasticsearch will be removed from our servers. Elasticsearch is the only part of ELK which is not bad, but its importance on the stack is diminishing. </p>
+
+
+
+
+<h3> Motivations for a change. </h3>
+
+
+<table clss="mytab" style="margin-top:30px">
+<tr><th>  <th>  ELK <th> Solr 
+<tr style="margin-top:5px"><td> <b style="color:black">Documentation </b>
+    <td class="mytab"> Good. 
+    <td class="mytab"> Decent only for Elasticsearch. Unacceptable for all other ELK tools.  
+<tr style="margin-top:5px"><td> <b style="color:black">Retro compatibility</b>
+    <td class="mytab"> Taken as an important necessity.
+    <td class="mytab"> Ignored completely, even at the level of JSON API to communicate with Elasticsearch. 
+<tr style="margin-top:5px"><td> <b style="color:black">Transparency </b>
+    <td class="mytab"> Full. Lucene is mentioned everywhere. A lot of effort is spent trying to explain how things work under the hood.
+    <td class="mytab"> Very scarce. Lucene is almost never mentioned.  
+<tr style="margin-top:10px"><td> <b style="color:black">Audience </b>
+    <td class="mytab"> Developers, better if Java aware. It can be operated by DevOps but the documentation speaks clearly to you if you understand a bit of Java. 
+    <td class="mytab"> DevOps. Desperate people who need it to work in short time.
+<tr style="margin-top:5px"><td> <b style="color:black"> Goodies </b>
+    <td class="mytab"> Scarce. Solr is Solr.
+    <td class="mytab"> Plenty. ELK is composed of Elasticsearch, Kibana, LogStash, the Beats, more for sure others that I am not aware of.
+<tr style="margin-top:5px"><td> <b style="color:black"> Prog. lang </b>
+    <td class="mytab"> Java
+    <td class="mytab"> Java, JavaScript, NodeJS, some kids web framework, Go, Python(?) => untouchable, willfully introduced chaos.
+<tr style="margin-top:5px"><td> <b style="color:black"> Backed by </b>
+    <td class="mytab"> Apache Foundation / Community
+    <td class="mytab"> Elasti.co / private company 
+<tr style="margin-top:5px"><td> <b style="color:black"> Vox Populi </b>
+    <td class="mytab"> Low hype level. 
+    <td class="mytab"> High hype level. The company Elasti.co is very good at choosing catchy names and spends a lot in advertising and events. 
+
+</table> 
+
+<p>
+On date <b>17-Oct-2019</b> I was at the San Jose 'Elastic{ON}' event. There I convinced my self definitely I did not want to stay with ELK and and change as soon as possible. The conference was all about user interfaces, there was not a single word about algorithms, no one explanation on the inner working on the system. The tacit assumption was that 'it is good for all cases', which is not true. Questions were not welcome and not answered, if not in private. 
+</p>
+
+<p>
+The strategy of Elasti.co company is to get new users with a product which is apparently easy to use. Then,  once you will start to load it you will get in trouble. At that moment you will need to call them and pay.
+</p>
+
 
 <h2> Ante Hoc. How the problem was managed so far. </h2>
 <hr>
